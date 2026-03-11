@@ -14,4 +14,17 @@ class Category extends Model
     protected $fillable = [
         'name'
     ];
+
+    public function instruments(){
+        return $this->hasMany(Instrument::class, 'category_id', 'id');
+    }
+
+    protected static function booted()
+    {
+        self::deleting(function (Category $category) {
+            $category->instruments()->each(function (Instrument $instrument) {
+                $instrument->delete();
+            });
+        });
+    }
 }
